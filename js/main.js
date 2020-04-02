@@ -97,11 +97,11 @@
 				image_mobile  = $(`<img src="${src_mobile}" class="${item_to_crop_class} ${item_draggable}" />`);
 			
 			let slider_desktop = document.createElement('input');
-				slider.setAttribute('type', 'range');
-				slider.setAttribute('min', 0);
-				slider.setAttribute('max', 100);
-				slider.setAttribute('value', 0);
-				slider.setAttribute('class', input_slider);
+				slider_desktop.setAttribute('type', 'range');
+				slider_desktop.setAttribute('min', 0);
+				slider_desktop.setAttribute('max', 100);
+				slider_desktop.setAttribute('value', 0);
+				slider_desktop.setAttribute('class', input_slider);
 				
 				$(`.tool`).append(bloc_desktop);
 				$(`.desktop`).append(image_desktop);
