@@ -1,0 +1,134 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv=”X-UA-Compatible” content=”ie=edge”>
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    #app {
+      display: flex;
+      padding: 20px 60px;
+      display: flex;
+    }
+
+    .navigation {
+      display: flex;
+      padding: 20px 60px;
+    }
+
+    .navigation li {
+      list-style: none;
+    }
+
+    .title {
+      background: #0078ff5c;
+      padding: 15px;
+      cursor: pointer;
+    }
+
+    .variante {
+      text-align: center;
+      border-radius: 4px;
+    }
+
+    #input_variante {
+      width: 160px;
+      height: 43px;
+      border: 1px solid grey;
+      padding-left: 20px;
+      border-radius: 4px;
+      margin-right: 40px;
+    }
+
+    #upload_widget {
+      width: 160px;
+    }
+
+    .form {
+      padding: 60px;
+    }
+
+    .list_images,
+    .ui-sortable-handle {
+      padding-left: 0;
+    }
+
+    .link_croper {
+      list-style: none;
+      margin-bottom: 15px;
+    }
+
+    .image_big {
+      width: 500px;
+    }
+
+    .image_slider {
+      display: block;
+      width: 500px;
+      margin: 50px 0;
+    }
+
+    .image_croper {
+      width: 150px;
+      margin-right: 20px;
+      border-radius: 6px;
+    }
+    .tool {
+      padding-left: 100px;
+    }
+
+    .json {
+      background: #0078ff;
+      padding: 17px;
+      border-radius: 4px;
+      color: white;
+      width: 140px;
+      margin: 20px 60px;
+      text-align: center;
+    }
+    .hide {
+      display: none;
+    }
+  </style>
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+  <form class="form" action"#" method="GET">
+    <input id="input_variante"
+           type="text"
+           placeholder="Nom de la variante"/>
+    <button type="submit"
+            id="upload_widget"
+            class="cloudinary-button">
+      Créer une variante
+    </button>
+  </form>
+  <nav class="navigation"></nav>
+  <div id="app"></div>
+  <div class="json hide">
+    Sauvegarder
+  </div>
+  <!-- Old code
+  <ul class="list_images"></div>
+  <div class="list_croping"></div>-->
+  <!-- Scripts JS -->
+  <script src="js/vendor/modernizr-3.8.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
