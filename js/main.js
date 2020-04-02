@@ -20,6 +20,9 @@
 
 	var carrousel = {},
 		images = [],
+		title = [],
+		section = 0,
+		index = 0,
 		App = $('#app'),
 		item_to_crop = 'image_croper',
 		item_to_crop_class = 'image_big',
@@ -28,29 +31,6 @@
 		list_crop = 'list_croping',
 		input_slider = 'image_slider',
 		input_form = 'input_variante';
-
-	 /*var json = {
-		"blanc": [
-		  {
-			"id": "0",
-			"queue": "0",
-			"type": "image",
-			"link_desktop": "https://res.cloudinary.com/asphalte/image/upload/v1585153298/product/DSB02562.jpg"
-		  },
-		  {
-			"id": "1",
-			"queue": "1",
-			"type": "image",
-			"link_desktop": "https://res.cloudinary.com/asphalte/image/upload/v1585153629/product/DSB01813.jpg"
-		  },
-		  {
-			"id": "2",
-			"queue": "2",
-			"type": "image",
-			"link_desktop": "https://res.cloudinary.com/asphalte/image/upload/v1585153631/product/DSB01841.jpg"
-		  }
-		]
-	};*/
 
 	$(function() {
 		watch_form();
@@ -63,24 +43,16 @@
 			   $(this).remove()
 			})[0].click()
 		  })
-		/*
-		watch_upload();
-		
-		  */
 	});
 
 	function lunch_upload() {
+		image = [];
 		cloudinary_widget.open();
 	}
 
 	function watch_form() {
 		$('.form').on('submit', (e) => {
-			let name = $(`#${input_form}`);
-			
-			create_variante(name.val());
 			lunch_upload();
-			
-			name.val('');
 			return false;
 		  });
 		
@@ -93,7 +65,7 @@
 				image_desktop  = $(`<img src="${src_desktop}" class="${item_to_crop_class} ${item_draggable}" />`);
 			
 			let src_mobile = create_image("mobile", event.target.src, cloudinary_desktop_x),
-				bloc_mobile = $(`<div class="desktop"></div>`),
+				bloc_mobile = $(`<div class="mobile"></div>`),
 				image_mobile  = $(`<img src="${src_mobile}" class="${item_to_crop_class} ${item_draggable}" />`);
 			
 			let slider_desktop = document.createElement('input');
@@ -101,7 +73,19 @@
 				slider_desktop.setAttribute('min', 0);
 				slider_desktop.setAttribute('max', 100);
 				slider_desktop.setAttribute('value', 0);
-				slider_desktop.setAttribute('class', input_slider);
+				slider_desktop.setAttribute('class', `${input_slider} desktop`);
+
+			let slider_mobile = document.createElement('input');
+				slider_mobile.setAttribute('type', 'range');
+				slider_mobile.setAttribute('min', 0);
+				slider_mobile.setAttribute('max', 200);
+				slider_mobile.setAttribute('value', 0);
+				slider_mobile.setAttribute('class', `${input_slider} mobile`);
+			
+			let name = $(`#${input_form}`);
+			let bloc = $(`#${name.val()}`);
+			let tool = $(`<div class="tool ${name.val()}"></div>`);
+			bloc.append(tool);
 				
 				$(`.tool`).append(bloc_desktop);
 				$(`.desktop`).append(image_desktop);
@@ -109,52 +93,74 @@
 				$(`.tool`).append(bloc_mobile);
 				$(`.mobile`).append(image_mobile);
 				$(`.mobile`).append(slider_mobile);
-				watch_slider();
+				watch_slider("desktop");
+				watch_slider("mobile");
 			return false;
 		});
 	}
 
-	function watch_slider() {
-		$(`.${input_slider}`).on('change', (event) => {
-			let image = $(`.${item_to_crop_class}`);
+	function watch_slider(size) {
+		$(`.${input_slider}.${size}`).on('change', (event) => {
+			console.log(event);
+			let image = $(`.${size} > .${item_to_crop_class}`);
 			let source = image.attr('src');
 			image.attr('src', slide_image(source, event.target.value));
 			return false;
 		})
 	}
 
-	function create_variante(name) {
-		carrousel[name] = {};
-		let nav = $('.navigation');
-		let variante = $(`<div class="variante ${name}"></div>`);
+	function create_variante(section, name) {
+
+
+		//list.append(item);
+		
+		/*
+		let variante = $(`<div id="${name}" class="variante"></div>`);
 		let tool = $(`<div class="tool ${name}"></div>`);
-		let item = $(`<li class="title">${name}<li/>`);
+		let item = $(`<li class="title" href="#${name}">${name}<li/>`);
 		let list = $(`<ul class="${list_images}"><ul/>`);
 		
 		
-		nav.append(item);
-		variante.append(list);
+		list.append(item);
+		variante.append(tool);
+		App.prepend(list);
 		App.append(variante);
-		App.append(tool);
-		$(`.${list_images}`).sortable();
+		
+		App.tabs();
+		*/
 	}
 
 
 	function callback_upload(error, result) {
+		let name = $(`#${input_form}`);
 		if (!error && result ) {
 			switch(result.event) {
 				case 'success':
-					console.log(result);
-					images.push({
-						"type" : result.info.resource_type,
-						"link_desktop" : result.info.secure_url
-					});
-					carrousel.blanc = images;
-					console.log(carrousel);
+					callback_success(name, result);
 					break;
 				case 'queues-end':
-					cloudinary_widget.close();
-					display_images(images);
+					var input = $(`#input_variante`);
+					var variante = $(`<div id="${input.val()}" class="variante"></div>`);
+					var nav = $('<ul id="nav" class="navigation"></ul>');
+					var list = $(`<ul class="${list_images}"><ul/>`);
+					var item = $(`<li class="title ${section}"><a href="#${input.val()}">${input.val()}</a><li/>`);
+					App.append(variante);
+					variante.append(list);
+					list.sortable();
+
+					callback_end(section);
+					console.log(carrousel);
+					if(section === 0) {
+						App.prepend(nav);
+						section = section + 1;
+					}
+					$('#nav').append(item);
+					var new_app = $('#app');
+					$('#app').remove();
+					$('.form').append(new_app);
+					new_app.tabs();
+					
+					watch_crop();
 					break;
 				default :
 					break;
@@ -162,7 +168,32 @@
 		}
 	}
 
-	function display_images (images) {
+	function callback_success(name, result) {
+		images.push({
+			"id" : index,
+			"type" : result.info.resource_type,
+			"link_desktop" : create_image("desktop", result.info.secure_url, cloudinary_desktop_x),
+			"link_mobile": create_image("mobile", result.info.secure_url, cloudinary_mobile_x)
+		});
+		index = index + 1;
+		carrousel[name.val()] = images;
+		console.log(carrousel);
+	}
+
+	function callback_end(section, name) {
+		return new Promise((resolve, reject) => {
+			cloudinary_widget.close();
+			var input = $(`#input_variante`);
+			carrousel[input.val()] = {};
+			title.push(input.val());
+			display_images();
+			images = [];
+			index = 0;
+			resolve(section + 1);
+		});
+	}
+
+	function display_images () {
 		$.each(images, ( index, value ) => {
 			let result;
 			if (value.type === "image") {
@@ -171,12 +202,11 @@
 				result = $(`<video src="${value.link_desktop}" class="${item_to_crop}" />`);
 			}
 			let link = $(`<li class="link_croper"></li>`);
-
+			carrousel[$(`#input_variante`).val()] = images;
 			link.append(result);
 			$(`.${list_images}`).append(link);
 			$('.json').show();
 		});
-		watch_crop();
 	}
 
 	function create_image (size, url, initial_gravity) {
@@ -201,8 +231,9 @@
 	}
 
 	function slide_image (url, new_gravity) {
-		let image_slide = url.split(cloudinary_desktop_x);
-
+		let image_slide = url.split(`x_`);
+		console.log(image_slide[0]);
+		console.log(image_slide[1]);
 		return (
 			image_slide[0]
 			+ `,x_${new_gravity}/`

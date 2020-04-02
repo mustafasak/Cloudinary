@@ -15,28 +15,37 @@
   <style>
     #app {
       display: flex;
-      padding: 20px 60px;
+      padding: 20px 0px;
       display: flex;
+      flex-wrap: wrap;
     }
 
     .navigation {
       display: flex;
-      padding: 20px 60px;
+      padding: 20px 0px;
+      width: 100%;
     }
 
     .navigation li {
       list-style: none;
+      width: 80px;
+      height: 40px;
+      text-align: center;
     }
 
-    .title {
-      background: #0078ff5c;
-      padding: 15px;
-      cursor: pointer;
+    .title a {
+      padding: 20px;
+      background: #0078ff;
+      color: white;
+      border-radius: 4px;
+      margin-right: 15px;
+      text-decoration: none;
     }
 
     .variante {
       text-align: center;
       border-radius: 4px;
+      display: flex;
     }
 
     #input_variante {
@@ -54,6 +63,10 @@
 
     .form {
       padding: 60px;
+    }
+
+    .list_images {
+      width: 30%;
     }
 
     .list_images,
@@ -83,6 +96,7 @@
     }
     .tool {
       padding-left: 100px;
+      width: 70%;
     }
 
     .json {
@@ -96,6 +110,11 @@
     }
     .hide {
       display: none;
+    }
+
+    #navigation {
+      display: flex;
+      width: 100%;
     }
   </style>
 
@@ -113,7 +132,7 @@
       Créer une variante
     </button>
   </form>
-  <nav class="navigation"></nav>
+   
   <div id="app"></div>
   <div class="json hide">
     Sauvegarder
