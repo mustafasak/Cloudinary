@@ -88,21 +88,27 @@
 
 	function watch_crop() {
 		$(`.${item_to_crop}`).on('click', (event) => {
-			let src_desktop = create_image("desktop", event.target.src, cloudinary_desktop_x);
-			let src_mobile = create_image("mobile", event.target.src, cloudinary_desktop_x);
-			let image_desktop  = $(`<img src="${src_desktop}" class="${item_to_crop_class} ${item_draggable}" />`);
-			let image_mobile  = $(`<img src="${src_mobile}" class="${item_to_crop_class} ${item_draggable}" />`);
+			let src_desktop = create_image("desktop", event.target.src, cloudinary_desktop_x),
+				bloc_desktop = $(`<div class="desktop"></div>`),
+				image_desktop  = $(`<img src="${src_desktop}" class="${item_to_crop_class} ${item_draggable}" />`);
 			
-			let slider = document.createElement('input');
+			let src_mobile = create_image("mobile", event.target.src, cloudinary_desktop_x),
+				bloc_mobile = $(`<div class="desktop"></div>`),
+				image_mobile  = $(`<img src="${src_mobile}" class="${item_to_crop_class} ${item_draggable}" />`);
+			
+			let slider_desktop = document.createElement('input');
 				slider.setAttribute('type', 'range');
 				slider.setAttribute('min', 0);
 				slider.setAttribute('max', 100);
 				slider.setAttribute('value', 0);
 				slider.setAttribute('class', input_slider);
-
-				$(`.tool`).append(image_desktop);
-				$(`.tool`).append(slider);
-				$(`.tool`).append(image_mobile);
+				
+				$(`.tool`).append(bloc_desktop);
+				$(`.desktop`).append(image_desktop);
+				$(`.desktop`).append(slider_desktop);
+				$(`.tool`).append(bloc_mobile);
+				$(`.mobile`).append(image_mobile);
+				$(`.mobile`).append(slider_mobile);
 				watch_slider();
 			return false;
 		});
