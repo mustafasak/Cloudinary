@@ -13,70 +13,104 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
   <style>
+    * {
+      font-family: "Roboto";
+      color: white;
+    }
+    body {
+      background: #313131;
+    }
+    h2 {
+      margin: 0;
+      padding: 20px;
+      font-weight: bold;
+    }
+    p {
+      margin: 0;
+      padding: 10px 60px;
+      color : rgba(255,255,255,0.7);
+      width: 100%;
+      padding: 10px 20px 20px;
+    }
     #app {
       display: flex;
-      padding: 20px 0px;
+      margin: 0px 60px;
       display: flex;
       flex-wrap: wrap;
+      box-shadow: 0px 0px 12px 5px rgba(0,0,0,0.1);
+      background: #1f1f1f;
     }
 
     .navigation {
       display: flex;
-      padding: 20px 0px;
+      padding: 0px;
       width: 100%;
+      margin: 0px;
+      padding: 20px;
     }
 
     .navigation li {
       list-style: none;
-      width: 80px;
-      height: 40px;
       text-align: center;
+      margin: 0;
+      padding: 0px 20px;
+      border-radius: 4px;
     }
 
-    .title a {
-      padding: 20px;
-      background: #0078ff;
-      color: white;
-      border-radius: 4px;
-      margin-right: 15px;
+    .navigation li a {
+      padding: 16px 12px;
       text-decoration: none;
+      display: block;
+      border-bottom: 0;
+      border-radius: 8px;
+      background: rgb(255, 255, 255, 0.4);
+      color: white;
+    }
+
+    .navigation li.ui-tabs-active a {
+      background: rgb(255, 255, 255, 0.4);
+      color: white;
     }
 
     .variante {
       text-align: center;
-      border-radius: 4px;
       display: flex;
+      width: 100%;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 0;
+      border-top: 1px solid black;
     }
 
-    #input_variante {
-      width: 160px;
-      height: 43px;
-      border: 1px solid grey;
+    .form_input {
+      width: 300px;
+      height: 51px;
+      border: 0;
       padding-left: 20px;
       border-radius: 4px;
       margin-right: 40px;
+      background: rgba(0, 0, 0, 0.30);
     }
 
     #upload_widget {
       width: 160px;
     }
 
-    .form {
-      padding: 60px;
-    }
-
     .list_images {
-      width: 30%;
+      padding: 20px;
+      background: rgba(0,0,0,0.4);
+      border-right: 1px solid rgba(0,0,0,0.2);
+      margin: 0;
     }
-
-    .list_images,
-    .ui-sortable-handle {
-      padding-left: 0;
+    .subtitle {
+      padding: 20px 40px;
+      background: rgba(0,0,0,0.4);
     }
 
     .link_croper {
       list-style: none;
       margin-bottom: 15px;
+      text-align: left;
     }
 
     .image_big {
@@ -91,30 +125,56 @@
 
     .image_croper {
       width: 150px;
-      margin-right: 20px;
       border-radius: 6px;
     }
     .tool {
-      padding-left: 100px;
-      width: 70%;
+      width: 80%;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+    }
+    .form {
+      width: 80%;
+      padding-left: 20px;
+    }
+    .header {
+      background: #1f1f1f;
+      display: flex;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+      justify-content: space-between;
+      box-shadow: 0px 0px 12px 5px rgba(0,0,0,0.1);
+      margin: 20px 60px 0;
+      padding: 20px;
+      border-radius: 4px;
+      flex-wrap: wrap;
+
+    }
+    .cloudinary-button {
+      border: 0;
+    }
+
+    .position {
+      margin-right: 20px;
     }
 
     .json {
-      background: #0078ff;
+      background: #02885c;
       padding: 17px;
       border-radius: 4px;
       color: white;
       width: 140px;
-      margin: 20px 60px;
+      margin-right: 60px;
       text-align: center;
     }
     .hide {
       display: none;
     }
 
-    #navigation {
+    .navigation {
       display: flex;
       width: 100%;
+      background: rgba(0,0,0,0.4);
+      padding: 0px 20px 20px;
     }
   </style>
 
@@ -122,21 +182,31 @@
 </head>
 
 <body>
-  <form class="form" action"#" method="GET">
-    <input id="input_variante"
-           type="text"
-           placeholder="Nom de la variante"/>
-    <button type="submit"
-            id="upload_widget"
-            class="cloudinary-button">
-      Créer une variante
-    </button>
-  </form>
+  <div class="header">
+    <h2>Création de Slider</h2>
+    <p>Créez vos variantes et uploader vos images. Une fois terminé, vous pouvez resize, crop et gérer la chronologie du slider.
+      <br /> Commencez par renseigner le nom de la variante :
+    </p>
+    <form class="form" method="GET">
+      <input id="input_product"
+             class="form_input"
+             type="text"
+             placeholder="Nom, par exemple : le-costume-frais"/>
+      <input id="input_variante"
+             class="form_input"
+             type="text"
+             placeholder="Nom de la variante"/>
+      <button type="submit"
+              id="upload_widget"
+              class="cloudinary-button">
+        Créer une variante
+      </button>
+    </form>
+    <div class="json hide">Sauvegarder</div>
+  </div>
+
    
   <div id="app"></div>
-  <div class="json hide">
-    Sauvegarder
-  </div>
   <!-- Old code
   <ul class="list_images"></div>
   <div class="list_croping"></div>-->

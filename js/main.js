@@ -46,7 +46,7 @@
 	});
 
 	function lunch_upload() {
-		image = [];
+		images = [];
 		cloudinary_widget.open();
 	}
 
@@ -60,6 +60,7 @@
 
 	function watch_crop() {
 		$(`.${item_to_crop}`).on('click', (event) => {
+			console.log(event);
 			let src_desktop = create_image("desktop", event.target.src, cloudinary_desktop_x),
 				bloc_desktop = $(`<div class="desktop"></div>`),
 				image_desktop  = $(`<img src="${src_desktop}" class="${item_to_crop_class} ${item_draggable}" />`);
@@ -81,20 +82,15 @@
 				slider_mobile.setAttribute('max', 200);
 				slider_mobile.setAttribute('value', 0);
 				slider_mobile.setAttribute('class', `${input_slider} mobile`);
-			
-			let name = $(`#${input_form}`);
-			let bloc = $(`#${name.val()}`);
-			let tool = $(`<div class="tool ${name.val()}"></div>`);
-			bloc.append(tool);
 				
-				$(`.tool`).append(bloc_desktop);
-				$(`.desktop`).append(image_desktop);
-				$(`.desktop`).append(slider_desktop);
-				$(`.tool`).append(bloc_mobile);
-				$(`.mobile`).append(image_mobile);
-				$(`.mobile`).append(slider_mobile);
-				watch_slider("desktop");
-				watch_slider("mobile");
+			$(`.tool.${name}`).append(bloc_desktop);
+			$(`.desktop`).append(image_desktop);
+			$(`.desktop`).append(slider_desktop);
+			$(`.tool.${name}`).append(bloc_mobile);
+			$(`.mobile`).append(image_mobile);
+			$(`.mobile`).append(slider_mobile);
+			watch_slider("desktop");
+			watch_slider("mobile");
 			return false;
 		});
 	}
@@ -110,24 +106,6 @@
 	}
 
 	function create_variante(section, name) {
-
-
-		//list.append(item);
-		
-		/*
-		let variante = $(`<div id="${name}" class="variante"></div>`);
-		let tool = $(`<div class="tool ${name}"></div>`);
-		let item = $(`<li class="title" href="#${name}">${name}<li/>`);
-		let list = $(`<ul class="${list_images}"><ul/>`);
-		
-		
-		list.append(item);
-		variante.append(tool);
-		App.prepend(list);
-		App.append(variante);
-		
-		App.tabs();
-		*/
 	}
 
 
@@ -146,21 +124,26 @@
 					var item = $(`<li class="title ${section}"><a href="#${input.val()}">${input.val()}</a><li/>`);
 					App.append(variante);
 					variante.append(list);
-					list.sortable();
+
+					let bloc = $(`#${input.val()}`);
+					let tool = $(`<div class="tool ${name.val()}"></div>`);
+					bloc.append(tool);
 
 					callback_end(section);
 					console.log(carrousel);
 					if(section === 0) {
 						App.prepend(nav);
+						App.prepend($('<p class="subtitle">Gestion des variables :</p>'));
 						section = section + 1;
 					}
 					$('#nav').append(item);
 					var new_app = $('#app');
 					$('#app').remove();
-					$('.form').append(new_app);
+					$('.header').after(new_app);
 					new_app.tabs();
 					
-					watch_crop();
+					watch_crop(input.val());
+					input.val('');
 					break;
 				default :
 					break;
@@ -186,25 +169,25 @@
 			var input = $(`#input_variante`);
 			carrousel[input.val()] = {};
 			title.push(input.val());
-			display_images();
-			images = [];
+			display_images(input.val());
 			index = 0;
 			resolve(section + 1);
 		});
 	}
 
-	function display_images () {
+	function display_images (name) {
 		$.each(images, ( index, value ) => {
 			let result;
 			if (value.type === "image") {
-				result = $(`<img src="${value.link_desktop}" class="${item_to_crop}" />`);
+				result = $(`<a href="#${name}-${index}"><span class="position">${index + 1}</span><img src="${value.link_desktop}" class="${item_to_crop}" /></a>`);
 			} else {
-				result = $(`<video src="${value.link_desktop}" class="${item_to_crop}" />`);
+				result = $(`<a href="#${name}-${index}"><span class="position">${index + 1 }</span><video src="${value.link_desktop}" class="${item_to_crop}" /></a>`);
 			}
 			let link = $(`<li class="link_croper"></li>`);
 			carrousel[$(`#input_variante`).val()] = images;
 			link.append(result);
-			$(`.${list_images}`).append(link);
+			$(`#${name} .${list_images}`).append(link);
+			$(`#${name} .${list_images}`).sortable();
 			$('.json').show();
 		});
 	}
