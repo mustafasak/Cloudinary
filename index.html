@@ -25,6 +25,9 @@
       padding: 20px;
       font-weight: bold;
     }
+    .description {
+      font-size: 14px;
+    }
     p {
       margin: 0;
       padding: 10px 60px;
@@ -58,17 +61,18 @@
     }
 
     .navigation li a {
-      padding: 16px 12px;
+      padding: 12px 20px;
       text-decoration: none;
       display: block;
       border-bottom: 0;
       border-radius: 8px;
-      background: rgb(255, 255, 255, 0.4);
+      background: rgba(0, 0, 0, 0.3);
       color: white;
+      border: 1px solid black;
     }
 
     .navigation li.ui-tabs-active a {
-      background: rgb(255, 255, 255, 0.4);
+      background: rgb(0, 120, 255);
       color: white;
     }
 
@@ -97,7 +101,7 @@
     }
 
     .list_images {
-      padding: 20px;
+      padding: 20px 20px 20px 40px;
       background: rgba(0,0,0,0.4);
       border-right: 1px solid rgba(0,0,0,0.2);
       margin: 0;
@@ -111,6 +115,13 @@
       list-style: none;
       margin-bottom: 15px;
       text-align: left;
+      padding: 0 0 15px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.9);
+      cursor: pointer;
+    }
+
+    .link_croper:last-child {
+      border-bottom: 0;
     }
 
     .image_big {
@@ -132,6 +143,11 @@
       text-align: left;
       display: flex;
       justify-content: space-between;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+    .tool img {
+      border-radius: 16px;
     }
     .form {
       width: 80%;
@@ -155,6 +171,10 @@
 
     .position {
       margin-right: 20px;
+      padding: 10px;
+      background: black;
+      border-radius: 8px;
+      font-size: 12px;
     }
 
     .json {
@@ -168,6 +188,12 @@
     }
     .hide {
       display: none;
+    }
+
+    .title img {
+      width: 16px;
+      opacity: 0.7;
+      padding-left: 10px;
     }
 
     .navigation {
