@@ -1,14 +1,16 @@
 (function($, window, document) {
 	var cloudinary_config = {
-			cloudName: 'asphalte', 
-			uploadPreset: 'shopify_widget',
-			sources: [ 'local' ],
+			cloudName: `asphalte`, 
+			uploadPreset: `shopify_widget`,
+			sources: [ `local` ],
 		},
 		cloudinary_widget = cloudinary.createUploadWidget(
 			cloudinary_config,
 			(error, result) => callback_upload(error, result)
 		),
-		cloudinary_split = "upload/",
+		cloudinary_split = `upload/`,
+		cloudinary_desktop = `https://res.cloudinary.com/asphalte/image/upload/c_scale,h_1400/c_crop,h_1400,w_2000`,
+		cloudinary_mobile = `https://res.cloudinary.com/asphalte/image/upload/c_scale,h_768/c_crop,h_768,w_768`,
 		cloudinary_desktop_width = 2000,
 		cloudinary_desktop_height = 1400,
 		cloudinary_desktop_transformation = `c_scale,h_${cloudinary_desktop_height}/c_crop,h_${cloudinary_desktop_height},w_${cloudinary_desktop_width}`,
@@ -18,143 +20,145 @@
 		cloudinary_mobile_transformation = `c_scale,h_${cloudinary_mobile_height}/c_crop,h_${cloudinary_mobile_height},w_${cloudinary_mobile_width}`,
 		cloudinary_mobile_x = ',x_0/';
 
-	var carrousel = {},
-		images = [],
-		title = [],
-		section = 0,
-		index = 0,
-		name = '',
-		App = $('#app'),
-		item_to_crop = 'image_croper',
-		item_to_crop_class = 'image_big',
-		item_draggable = 'ui-state-default',
-		list_images = 'list_images',
-		list_crop = 'list_croping',
-		input_slider = 'image_slider',
-		input_form = 'input_variante';
+	var global = {
+		carrousel: {},
+		title: [],
+		section: 0,
+		index: 0,
+		name: ''
+	}
+
+	var selector = {
+		app: $('#app'),
+		json: 'json',
+		form: 'form',
+		input_form: 'input_variante',
+		item_to_crop: 'image_croper',
+		item_to_crop_class: 'image_big',
+		item_draggable: 'ui-state-default',
+		list_images: 'list_images',
+		list_crop: 'list_croping',
+		input_slider: 'image_slider'
+	}
 
 	$(function() {
 		watch_form();
-		$(".json").click(function() {
+	});
+
+	function download_button() {
+		$(`.${selector.json}`).show();
+		$(`.${selector.json}`).click(function() {
 			$("<a />", {
 			  "download": "data.json",
-			  "href" : "data:application/json," + encodeURIComponent(JSON.stringify(carrousel))
+			  "href" : "data:application/json," + encodeURIComponent(JSON.stringify(global.carrousel))
 			}).appendTo("body")
 			.click(function() {
 			   $(this).remove()
 			})[0].click()
-		  })
-	});
-
-	function lunch_upload() {
-		images = [];
-		name = $(`#input_variante`).val();
-		$(`#input_variante`).val('');
-		cloudinary_widget.open();
+		})
 	}
 
 	function watch_form() {
-		$('.form').on('submit', (e) => {
-			lunch_upload();
-			return false;
-		  });
-		
-	}
-
-	function watch_crop() {
-		$(`.${item_to_crop}`).on('click', (event) => {
-			if ($('.desktop') !== undefined) {
-				$('.desktop').remove();
-				$('.mobile').remove();
-			}
-			let src_desktop = create_image("desktop", event.target.src, cloudinary_desktop_x),
-				bloc_desktop = $(`<div class="desktop"></div>`),
-				image_desktop  = $(`<img src="${src_desktop}" class="${item_to_crop_class} ${item_draggable}" />`);
-			
-			let src_mobile = create_image("mobile", event.target.src, cloudinary_desktop_x),
-				bloc_mobile = $(`<div class="mobile"></div>`),
-				image_mobile  = $(`<img src="${src_mobile}" class="${item_to_crop_class} ${item_draggable}" />`);
-			
-			let slider_desktop = document.createElement('input');
-				slider_desktop.setAttribute('type', 'range');
-				slider_desktop.setAttribute('min', 0);
-				slider_desktop.setAttribute('max', 100);
-				slider_desktop.setAttribute('value', 0);
-				slider_desktop.setAttribute('class', `${input_slider} desktop`);
-
-			let slider_mobile = document.createElement('input');
-				slider_mobile.setAttribute('type', 'range');
-				slider_mobile.setAttribute('min', 0);
-				slider_mobile.setAttribute('max', 200);
-				slider_mobile.setAttribute('value', 0);
-				slider_mobile.setAttribute('class', `${input_slider} mobile`);
-			
-			$(`.tool,.${name}`).append(bloc_desktop);
-			$(`.desktop`).append(image_desktop);
-			$(`.desktop`).append(slider_desktop);
-			let titre_desktop = $(`<p class="description">Affichage Desktop :<br />Format (2000x1400) Webp </p>`);
-			$(`.desktop`).prepend(titre_desktop);
-			
-			$(`.tool,.${name}`).append(bloc_mobile);
-			$(`.mobile`).append(image_mobile);
-			$(`.mobile`).append(slider_mobile);
-			let titre_mobile = $(`<p class="description">Affichage Mobile :<br />Format (768w768) Webp </p>`);
-			$(`.mobile`).prepend(titre_mobile);
-			
-			watch_slider("desktop");
-			watch_slider("mobile");
-			// name.val('');
+		$(`.${selector.form}`).on('submit', (e) => {
+			set_name().then(() => {
+				cloudinary_widget.open();
+			});
 			return false;
 		});
 	}
 
-	function watch_slider(size) {
-		$(`.${input_slider}.${size}`).on('change', (event) => {
-			console.log(event);
-			let image = $(`.${size} > .${item_to_crop_class}`);
-			let source = image.attr('src');
-			image.attr('src', slide_image(source, event.target.value));
-			return false;
-		})
+	function set_name() {
+		let name_variante = $(`#${selector.input_form}`);
+
+		return new Promise((resolve, reject) => {
+			if (name_variante.val() !== '') {
+				watch_switch(name_variante.val());
+				global.name = name_variante.val();
+				global.carrousel[global.name] = [];
+				name_variante.val('');
+				resolve();
+			} else {
+				reject();
+			}
+		});
 	}
 
-	function create_variante(section, name) {
+	function watch_switch(tab) {
+		$(`a[href='#${tab}']`).on('click', function(event) {
+			global.name = tab;
+		});
 	}
 
+	function watch_crop() {
+		$('.image_croper').on('click', function(event) {
+			$(`.tool`).hide();
+			$(`#${global.name}`).find(`.tool.${global.name}-${event.target.id}`).show();
+			display_resizer(event.target.id);
+		});
+	}
+
+	function watch_edit() {
+		$('input[type=range]').on('change', function (event) {
+			let id = $(this).attr('id');
+
+			if ($(this).attr('class') === `image_slider-desktop`) {
+				let bloc = $(`.tools`).find(`.${global.name}-${id}-desktop`);
+				let src = slide_image(`desktop`, global.carrousel[global.name][id].link_desktop, event.target.value);
+				bloc.find('.image_big').remove();
+				bloc.find('.description').after($(`<img src="${src}" class="${selector.item_to_crop_class} ${selector.item_draggable}" />`));
+				global.carrousel[global.name][id].link_desktop = src;
+			} else {
+				let bloc = $(`.tools`).find(`.${global.name}-${id}-mobile`);
+				let src = slide_image(`mobile`, global.carrousel[global.name][id].link_mobile, event.target.value);
+				bloc.find('.image_big').remove();
+				bloc.find('.description').after($(`<img src="${src}" class="${selector.item_to_crop_class} ${selector.item_draggable}" />`));
+				global.carrousel[global.name][id].link_mobile = src;
+			}
+		});
+	}
+
+	function display_resizer (id) {
+		if ($(`${global.name}-${id}-desktop`) !== undefined) {
+
+			let src_desktop = global.carrousel[global.name][id].link_desktop,
+				bloc_desktop = $(`<div class="${global.name}-${id}-desktop"></div>`),
+				title_desktop = $(`<p class="description">Affichage Desktop :<br />Format (2000x1300) Webp </p>`),
+				image_desktop  = $(`<img src="${src_desktop}" class="${selector.item_to_crop_class} ${selector.item_draggable}" />`),
+				slider_desktop = $(`<input type="range" min=0 max=100 value=0 step="10" id="${id}" class="${selector.input_slider}-desktop" />`);
+			
+			let src_mobile = global.carrousel[global.name][id].link_mobile,
+				bloc_mobile = $(`<div class="${global.name}-${id}-mobile"></div>`),
+				title_mobile = $(`<p class="description">Affichage Mobile :<br />Format (768x768) Webp </p>`),
+				image_mobile  = $(`<img src="${src_mobile}" class="${selector.item_to_crop_class} ${selector.item_draggable}" />`),
+				slider_mobile = $(`<input type="range" min=0 max380 value=0 step="10" id="${id}" class="${selector.input_slider}-mobile" />`);
+
+			bloc_desktop.append(title_desktop);
+			bloc_desktop.append(image_desktop);
+			bloc_desktop.append(slider_desktop);
+
+			bloc_mobile.append(title_mobile);
+			bloc_mobile.append(image_mobile);
+			bloc_mobile.append(slider_mobile);
+
+			let already = $(`#${global.name}`).find(`.tool.${global.name}-${id} .${global.name}-${id}-desktop`);
+			if (already.length === 0) {
+				$(`#${global.name}`)
+					.find(`.tool.${global.name}-${id}`)
+					.append(bloc_desktop)
+					.append(bloc_mobile);
+			}
+			watch_edit();
+		}
+	}
 
 	function callback_upload(error, result) {
 		if (!error && result ) {
 			switch(result.event) {
 				case 'success':
-					callback_success(result);
+					upload_success(result);
 					break;
 				case 'queues-end':
-					var variante = $(`<div id="${name}" class="variante"></div>`);
-					var nav = $('<ul id="nav" class="navigation"></ul>');
-					var list = $(`<ul class="${list_images}"><ul/>`);
-					var item = $(`<li class="title ${section}"><a href="#${name}">${name} <img src="/../img/close.png" alt="Close" /></a><li/>`);
-					App.append(variante);
-					variante.append(list);
-
-					let bloc = $(`#${name}`);
-					let tool = $(`<div class="tool ${name}"></div>`);
-					bloc.append(tool);
-
-					callback_end(section);
-					console.log(carrousel);
-					if(section === 0) {
-						App.prepend(nav);
-						App.prepend($('<p class="subtitle">Gestion des variables :</p>'));
-						section = section + 1;
-						$('#nav').prepend(item);
-					}
-					$(`.title,.${index -1 }`).after(item);
-					var new_app = $('#app');
-					$('#app').remove();
-					$('.header').after(new_app);
-					new_app.tabs();
-					$(`#${name},.${list_images}`).sortable();
-					watch_crop();
+					upload_end(result);
 					break;
 				default :
 					break;
@@ -162,54 +166,110 @@
 		}
 	}
 
-	function callback_success(result) {
-		images.push({
-			"id" : index,
+	function upload_success(result) {
+		global.carrousel[global.name].push({
+			"id" : global.index,
 			"type" : result.info.resource_type,
 			"link_desktop" : create_image("desktop", result.info.secure_url, cloudinary_desktop_x),
 			"link_mobile": create_image("mobile", result.info.secure_url, cloudinary_mobile_x)
 		});
-		index = index + 1;
-		carrousel[name] = images;
-		console.log(carrousel);
+		global.index = global.index + 1;
 	}
 
-	function callback_end(section) {
-		return new Promise((resolve, reject) => {
-			cloudinary_widget.close();
-			carrousel[name] = {};
-			title.push(name);
-			display_images(name);
-			index = 0;
-			resolve(section + 1);
+	function upload_end() {
+		let variante = $(`<div id="${global.name}" class="variante"></div>`);
+		selector.app.append(variante);
+
+		create_variante_bar().then(() => {
+			create_tool_blocs().then(() => {
+				display_images().then(() => {
+					let tabs = selector.app.tabs();
+					tabs.tabs( "refresh" );
+					$(`#${global.name}`).find(`.${selector.list_images}`).sortable();
+					download_button();
+					watch_crop();
+					global.index = 0;
+					cloudinary_widget.close();
+				});
+			});
 		});
 	}
 
-	function display_images (name) {
-		$.each(images, ( index, value ) => {
-			let result;
-			if (value.type === "image") {
-				result = $(`<span class="position">${index + 1}</span><img src="${value.link_desktop}" class="${item_to_crop}" />`);
+	function create_variante_bar () {
+		return new Promise((resolve) => {
+			var nav = $('<ul id="nav" class="navigation"></ul>');
+			var item = $(`<li class="title ${global.section}"><a href="#${global.name}">${global.name}</a><li/>`);
+	
+			if(global.section === 0) {
+				nav.prepend(item);
+				selector.app.prepend(nav);
+				selector.app.prepend($('<p class="subtitle">Gestion des variables :</p>'));
+				
 			} else {
-				result = $(`<span class="position">${index + 1 }</span><video src="${value.link_desktop}" class="${item_to_crop}" />`);
+				$(`#nav`).prepend(item);
 			}
-			let link = $(`<li class="link_croper"></li>`);
-			carrousel[name] = images;
-			link.append(result);
-			console.log(name, list_images);
-			$(`#${name} .${list_images}`).append(link);
-			$('.json').show();
+			global.section = global.section + 1;
+			resolve();
 		});
 	}
 
-	function create_image (size, url, initial_gravity) {
+	function create_tool_blocs () {
+		let variante = $(`#${global.name}`);
+		let tools = $(`<div class="tools"></div>`);
+
+		return new Promise((resolve,reject) => {
+			if (global.carrousel[global.name]) {
+				for (let i = 0; i < global.index; i++) {
+					let tool = $(`<div class="tool ${global.name}-${i}"></div>`);
+					tools.append(tool);
+				}
+				variante.append(tools);
+				$('.tool').each(function(index) {
+					$(this).hide();
+				});
+				resolve();
+			} else {
+				reject();
+			}
+		});
+	}
+
+	function display_images () {
+		let variante = $(`#${global.name}`);
+		var list = $(`<ul class="${selector.list_images}"><ul/>`);
+
+		return new Promise((resolve,reject) => {
+			if (global.carrousel[global.name]) {
+				$.each(global.carrousel[global.name], ( index, value ) => {
+					let result;
+					let link = $(`<li class="link_croper"></li>`);
+				
+					if (value.type === 'image') {
+						result = $(`<span class="position">${index + 1}</span><img src="${value.link_desktop}" id="${index}" class="${selector.item_to_crop}" />`);
+					} else {
+						result = $(`<span class="position">${index + 1 }</span><video src="${value.link_desktop}" id="${index}" class="${selector.item_to_crop}" />`);
+					}
+					
+					link.append(result);
+					$(list).append(link);
+				});
+				variante.prepend(list);
+				resolve();
+			} else {
+				reject();
+			}
+		});
+	}
+
+	function create_image (format, url, gravity) {
 		let image_resize = url.split(cloudinary_split);
-		if (size === "desktop") {
+		
+		if (format === 'desktop') {
 			return (
 				image_resize[0]
 				+ cloudinary_split
 				+ cloudinary_desktop_transformation
-				+ initial_gravity
+				+ gravity
 				+ image_resize[1]
 			);
 		} else {
@@ -217,21 +277,33 @@
 				image_resize[0]
 				+ cloudinary_split
 				+ cloudinary_mobile_transformation
-				+ initial_gravity
+				+ gravity
 				+ image_resize[1]
 			);
 		}
 	}
 
-	function slide_image (url, new_gravity) {
-		let image_slide = url.split(`x_`);
-		console.log(image_slide[0]);
-		console.log(image_slide[1]);
-		return (
-			image_slide[0]
-			+ `,x_${new_gravity}/`
-			+ image_slide[1]
-		)
+	function slide_image (format, url, new_gravity) {
+		let image_slide = url.split(`/`);
+
+		if (format === `desktop`) {
+			return (
+				cloudinary_desktop
+				+ `,x_${new_gravity}/`
+				+ `${image_slide[8]}/`
+				+ `${image_slide[9]}/`
+				+ image_slide[10]
+			)
+		} else {
+			return (
+				cloudinary_mobile
+				+ `,x_${new_gravity}/`
+				+ `${image_slide[8]}/`
+				+ `${image_slide[9]}/`
+				+ image_slide[10]
+			)
+		}
+		
 	}
 
 }(window.jQuery, window, document));

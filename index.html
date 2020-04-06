@@ -128,7 +128,8 @@
       width: 500px;
     }
 
-    .image_slider {
+    .image_slider-desktop,
+    .image_slider-mobile {
       display: block;
       width: 500px;
       margin: 50px 0;
@@ -138,8 +139,10 @@
       width: 150px;
       border-radius: 6px;
     }
-    .tool {
+    .tools {
       width: 80%;
+    }
+    .tool {
       text-align: left;
       display: flex;
       justify-content: space-between;
@@ -148,6 +151,7 @@
     }
     .tool img {
       border-radius: 16px;
+      display: block;
     }
     .form {
       width: 80%;
@@ -214,10 +218,10 @@
       <br /> Commencez par renseigner le nom de la variante :
     </p>
     <form class="form" method="GET">
-      <input id="input_product"
+      <!--<input id="input_product"
              class="form_input"
              type="text"
-             placeholder="Nom, par exemple : le-costume-frais"/>
+             placeholder="Nom, par exemple : le-costume-frais"/>-->
       <input id="input_variante"
              class="form_input"
              type="text"
