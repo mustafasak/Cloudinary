@@ -72,7 +72,6 @@
 
 		return new Promise((resolve, reject) => {
 			if (name_variante.val() !== '') {
-				watch_switch(name_variante.val());
 				global.name = name_variante.val();
 				global.carrousel[global.name] = [];
 				name_variante.val('');
@@ -84,6 +83,7 @@
 	}
 
 	function watch_switch(tab) {
+		console.log(tab);
 		$(`a[href='#${tab}']`).on('click', function(event) {
 			global.name = tab;
 		});
@@ -91,6 +91,7 @@
 
 	function watch_crop() {
 		$('.image_croper').on('click', function(event) {
+			console.log(global.name);
 			$(`.tool`).hide();
 			$(`#${global.name}`).find(`.tool.${global.name}-${event.target.id}`).show();
 			display_resizer(event.target.id);
@@ -188,6 +189,7 @@
 					$(`#${global.name}`).find(`.${selector.list_images}`).sortable();
 					download_button();
 					watch_crop();
+					watch_switch(global.name);
 					global.index = 0;
 					cloudinary_widget.close();
 				});
