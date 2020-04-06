@@ -83,7 +83,6 @@
 	}
 
 	function watch_switch(tab) {
-		console.log(tab);
 		$(`a[href='#${tab}']`).on('click', function(event) {
 			global.name = tab;
 		});
@@ -91,7 +90,6 @@
 
 	function watch_crop() {
 		$('.image_croper').on('click', function(event) {
-			console.log(global.name);
 			$(`.tool`).hide();
 			$(`#${global.name}`).find(`.tool.${global.name}-${event.target.id}`).show();
 			display_resizer(event.target.id);
@@ -131,7 +129,7 @@
 				bloc_mobile = $(`<div class="${global.name}-${id}-mobile"></div>`),
 				title_mobile = $(`<p class="description">Affichage Mobile :<br />Format (768x768) Webp </p>`),
 				image_mobile  = $(`<img src="${src_mobile}" class="${selector.item_to_crop_class} ${selector.item_draggable}" />`),
-				slider_mobile = $(`<input type="range" min=0 max380 value=0 step="10" id="${id}" class="${selector.input_slider}-mobile" />`);
+				slider_mobile = $(`<input type="range" min=0 max=380 value=0 step="10" id="${id}" class="${selector.input_slider}-mobile" />`);
 
 			bloc_desktop.append(title_desktop);
 			bloc_desktop.append(image_desktop);
